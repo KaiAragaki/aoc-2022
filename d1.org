@@ -1,0 +1,48 @@
+
+* Part 1
+
+Here's what we're working with:
+
+#+begin_src R
+f <- read.csv("./d1-1_in.txt", blank.lines.skip = FALSE, header = FALSE)[[1]]
+
+head(f, 20)
+#+end_src
+
+#+RESULTS:
+|  2000 |
+| 12013 |
+|  5489 |
+| 11485 |
+|  2430 |
+|  7722 |
+|  5456 |
+|       |
+|  6693 |
+|  3867 |
+|  1645 |
+|  3924 |
+|  1545 |
+|  1910 |
+|  5443 |
+|  6276 |
+|  4574 |
+|  4147 |
+|  3942 |
+|  6322 |
+
+We could use loops (and this does seem like a rather loopish problem!) but let's try something a little different.
+
+#+begin_src R
+sums <- split(f, cumsum(is.na(f))) |>
+  sapply(sum, na.rm = TRUE)
+#+end_src
+
+#+begin_src R
+ans_1 <- max(sums)
+#+end_src
+
+* Part 2
+#+begin_src R
+
+#+end_src
