@@ -1,0 +1,66 @@
+Here are the data:
+
+* Part 1
+
+#+begin_src R
+f <- read.delim("./d2-1_in.txt", header = FALSE, sep = " ")
+#+end_src
+
+Hmmmm...X = rock = A, Y = paper = B, Z = scissors = C.
+
+Also...when I choose X, I get one point. When I choose Y, I get two points. When I choose Z, I get three points.
+
+Maybe we can make this simpler:
+
+#+begin_src R
+f$V1 <- as.double(match(f$V1, LETTERS))
+f$V2 <- match(f$V2, LETTERS) - 23
+#+end_src
+
+if v2 - 1 = v1, win
+if v2 + 1 = v1, loss
+if v1 == v2, tie
+what about v2 = 3, v1 = 1
+
+if:
+1 2 win -24
+2 3 win -24
+
+2 1 loss -22
+3 2 loss -22
+
+3 1 win -21
+1 3 loss -25
+
+3 3 tie -23
+2 2 tie -23
+1 1 tie -23
+
+(diff)%%3
+
+#+begin_src R
+sum(c(3, 0, 6)[(f$V1 - f$V2)%%3+1] + f$V2)
+#+end_src
+
+* Part 2
+
+X = loss c(1, 2, 3) %%3 + 1
+Y = draw
+Z = win ((c(1, 2, 3) + 1) %% 3) + 1
+
+target 3 1 2
+
+so if X, just %% 3 + 1
+if Z, add one, then do above
+if Y, set as first
+
+#+begin_src R
+library(dplyr)
+f <- mutate(f, V3 = case_when(
+            V2 == 3 ~ ((V1 %% 3) + 1),
+            V2 == 1 ~ ((V1 + 1) %% 3) + 1,
+            T ~ V1))
+sum(c(3, 0, 6)[(f$V1 - f$V3) %% 3 + 1] + f$V3)
+#+end_src
+
+#+RESULTS:

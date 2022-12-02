@@ -44,5 +44,5 @@ ans_1 <- max(sums)
 
 * Part 2
 #+begin_src R
-
+sum(sort(sums, decreasing = T)[1:3])
 #+end_src
