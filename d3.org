@@ -1,0 +1,30 @@
+
+
+* Common
+#+begin_src R
+library(stringr)
+f <- read.csv("./d3-1_in.txt", header = FALSE)
+f$V1 <- str_trim(f$V1)
+ll <- c(letters, LETTERS)
+#+end_src
+
+* Part 1
+
+#+begin_src R
+first <- sapply(f$V1, \(x) substring(x, 1, nchar(x)/2) |> strsplit(""))
+second <- sapply(f$V1, \(x) substring(x, nchar(x)/2 + 1, nchar(x)) |> strsplit(""))
+both <- mapply(intersect, first, second)
+sapply(both, \(x) which(ll == x)) |> sum()
+#+end_src
+
+* Part 2
+
+#+begin_src R
+library(dplyr)
+f$group <- rep(1:(nrow(f)/3), each = 3)
+with_badge <- f |>
+  group_by(group) |>
+  mutate(items = strsplit(V1, "")) |>
+  summarize(badge = Reduce(intersect, items))
+with_badge$badge |> sapply(\(x) which(ll == x)) |> sum()
+#+end_src
