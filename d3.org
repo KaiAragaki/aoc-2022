@@ -1,30 +1,28 @@
-#+begin_src R :session *R*
+* Common
+#+begin_src R
 library(stringr)
-f <- read.csv("d2_1_input.txt", header = F)
-n1_1 <- str_extract(f$V1, "^[^-]*") |> as.numeric()
-n2_1 <- str_extract(f$V2, "^[^-]*") |> as.numeric()
-n1_2 <- str_extract(f$V1, "[^-]*$") |> as.numeric()
-n2_2 <- str_extract(f$V2, "[^-]*$") |> as.numeric()
-sum(abs(sign(n1_1 - n2_1) + sign(n1_2 - n2_2)) < 2)
+f <- read.csv("./d3-1_in.txt", header = FALSE)
+f$V1 <- str_trim(f$V1)
+ll <- c(letters, LETTERS)
 #+end_src
 
-#+RESULTS:
-: 550
+* Part 1
 
-If V2's first number is larger than V1's first number, diff_1 == -1. For a 'nested' pair, V1's second number would need to be larger than V2's second number, or the same - thus diff_2 will be 1 or 0. The sum of all this will be 0 or -1
-
-
-
-If V2's first number is smaller than V1's first number, diff_1 == 1. A nested pair would require V1's second number < V2's second number (or equal) making diff_2 -1 or 0, making the sum 1 or 0.
-
-So the sum doesn't work. I think I need to show that the signs aren't the SAME, but it is completely possible for 0, 0  to work out.
-
-So (-1, 1), (1, -1), (0, 1), (0, -1), (1, 0), (-1, 0), and (0, 0) all work.
-(1, 1),
-
-#+begin_src R :session *R*
-mapply(\(a, b, c, d) intersect(seq(a, b), seq(c, d)) |> length() > 0, n1_1, n1_2, n2_1, n2_2) |> sum()
+#+begin_src R
+first <- sapply(f$V1, \(x) substring(x, 1, nchar(x)/2) |> strsplit(""))
+second <- sapply(f$V1, \(x) substring(x, nchar(x)/2 + 1, nchar(x)) |> strsplit(""))
+both <- mapply(intersect, first, second)
+sapply(both, \(x) which(ll == x)) |> sum()
 #+end_src
 
-#+RESULTS:
-: 931
+* Part 2
+
+#+begin_src R
+library(dplyr)
+f$group <- rep(1:(nrow(f)/3), each = 3)
+with_badge <- f |>
+  group_by(group) |>
+  mutate(items = strsplit(V1, "")) |>
+  summarize(badge = Reduce(intersect, items))
+with_badge$badge |> sapply(\(x) which(ll == x)) |> sum()
+#+end_src
